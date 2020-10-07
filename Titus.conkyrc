@@ -68,11 +68,11 @@ conky.config = {
 												-- middle_left,middle_middle,middle_right,none
 	--Arch Duoscreen
 	--gap_x = -1910,
-	gap_x = 15,									-- pixels between right or left border
+	gap_x = 10,									-- pixels between right or left border
 	gap_y = 0,									-- pixels between bottom or left border
 	minimum_height = 600,						-- minimum height of window
-	minimum_width = 300,						-- minimum height of window
-	maximum_width = 300,						-- maximum height of window
+	minimum_width = 350,						-- minimum height of window
+	maximum_width = 500,						-- maximum height of window
 
 	--Graphical
 
@@ -112,7 +112,7 @@ conky.config = {
 	--Windows
 
 	own_window = true,							-- create your own window to draw
-	own_window_argb_value = 100,			    -- real transparency - composite manager required 0-255
+	own_window_argb_value = 0,			    -- real transparency - composite manager required 0-255
 	own_window_argb_visual = true,				-- use ARGB - composite manager required
 	own_window_colour = '#000000',				-- set colour if own_window_transparent no
 	own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',  -- if own_window true - just hints - own_window_type sets it
@@ -125,16 +125,17 @@ conky.config = {
 
 	default_color = '#D9DDE2',  				-- default color and border color
 	color1 = '#FF0000',
-	color2 = '#597AA1',
+	color2 = '#FFA726',
 	color3 = '#cccccc',
 	color4 = '#D9BC83',
 	color5 = '#00BFFF',
 	color6 = '#FFFFFF',
 
 	--Signal Colours
-	color7 = '#1F7411',  						--green
+	color7 = '#34d61a',  						--green
 	color8 = '#FFA726',  						--orange
-	color9 = '#F1544B',  						--firebrick
+	color9 = '#e30000',  						--red
+
 
     --Lua
 
@@ -143,59 +144,80 @@ conky.config = {
 
 conky.text = [[
 ${color6}${voffset 4}${font GE Inspira:size=36}${alignc}${time %l}:${time %M} ${time %p}${font}${color}
-${color6}${voffset 4}${font GE Inspira:size=12}${alignc}${time %A} ${time %B} ${time %e}, ${time %Y}${font}${color}
-
-${color5}${font Roboto:size=10}${voffset 2}S Y S T E M   ${hr 2}${font}${color}
+${color6}${voffset 4}${font GE Inspira:size=12}${alignc}${time %e} de ${time %B} - ${time %A} - ${time %Y}${font}${color}
+#
+#============================SISTEMA===========================================
+#
+${color5}${font Roboto:size=10}${voffset 2}S I S T E M A  ${hr 2}${font}${color}
 ${color2}${voffset 8}Hostname:${color} ${alignr}${nodename}
-${color2}Distro:${color}${alignr}$sysname ${alignr}${execi 6000 lsb_release -a | grep 'Description'|awk {'print $3, $4, $5'}}
-${color2}Kernel:${color}${alignr}${exec uname} ${exec uname -r}
+${color2}Distro:${color}${alignr}${alignr}${execi 6000 lsb_release -a | grep 'Description'|awk {'print $2, $3'}}
+${color2}Kernel:${color}${alignr}${exec uname -r | awk -F- {'print $1'}}
 #Nvidia: ${alignr}${execp  nvidia-smi --query-supported-clocks=gpu_name --format=csv,noheader}
 #Nvidia Driver: ${alignr}${execi 60000 nvidia-smi | grep "Driver Version"| awk {'print $3'}}
-${color2}Uptime:${color} ${alignr}${uptime}
-${color5}${font Roboto:size=10}P R O C E S S O R S  ${hr 2}${font}${color}
+${color2}Tempo de atividade:${color} ${alignr}${uptime}
+${color8}Download:${color} ${alignr}${offset -10$}${downspeed enp7s0}${alignr}${downspeedgraph enp7s0 8,100}
+${color8}Upload:${color} ${alignr}${offset -10$}${upspeed enp7s0}${alignr}${upspeedgraph enp7s0 8,100}
+#============================Processos===========================================
+${color5}${font Roboto:size=10}P R O C E S S O S  ${hr 2}${font}${color}
+${color7}${goto 225}  CPU${goto 300}  RAM${color2}
+1  -  ${color2}${top name 1}${color}${alignr}${goto 170} ${goto 222}${top cpu 1}% ${goto 300}${top mem 1}%${color2}
+2  -  ${color2}${top name 2}${color}${alignr} ${goto 220}${top cpu 2}% ${goto 300}${top mem 2}%${color2}
+3  -  ${color2}${top name 3}${color}${alignr} ${goto 220}${top cpu 3}% ${goto 300}${top mem 3}%${color2}
+4  -  ${color2}${top name 4}${color}${alignr} ${goto 220}${top cpu 4}% ${goto 300}${top mem 4}%${color2}
+5  -  ${color2}${top name 5}${color}${alignr} ${goto 220}${top cpu 5}% ${goto 300}${top mem 5}%${color2}
+
+#
+#============================Processador===========================================
+#
+${color5}${font Roboto:size=10}P R O C E S S A D O R  ${hr 2}${font}${color}
+#${color2}Modelo: ${color} $alignr${execi 6000 lscpu | grep 'Nome do modelo' |awk {'print $4,$5,$6'}}
+${goto 70}${font Roboto:size=10}${color7}	${execp  lscpu | grep 'Nome do modelo' |awk {'print $4,$5,$6'}}${font}
 ${color2}CPU Freq:${color} $alignr${freq}MHz
-${color2}CPU Temp:${color} $alignr${execi 10 sensors | grep 'Core 0' | awk {'print $3'}}
-${color2}History:${color} ${alignr}${cpugraph 8,100}
-${color2}${offset 30}CPU Core 1:${color} ${alignr}${offset -10}${cpu cpu1}%${alignr}${cpubar cpu1}
-${color2}${offset 30}CPU Core 2:${color} ${alignr}${offset -10}${cpu cpu2}%${alignr}${cpubar cpu2}
-${color2}${offset 30}CPU Core 3:${color} ${alignr}${offset -10}${cpu cpu3}%${alignr}${cpubar cpu3}
-${color2}${offset 30}CPU Core 4:${color} ${alignr}${offset -10}${cpu cpu4}%${alignr}${cpubar cpu4}
-${color2}Top Processes${goto 222}cpu%${goto 274}mem%${color}
-${voffset 4}     1  -  ${top name 1}${alignr}${goto 170} ${goto 222}${top cpu 1} ${goto 274}${top mem 1}
-     2  -  ${top name 2}${alignr} ${goto 222}${top cpu 2} ${goto 274}${top mem 2}
-     3  -  ${top name 3}${alignr} ${goto 222}${top cpu 3} ${goto 274}${top mem 3}
-     4  -  ${top name 4}${alignr} ${goto 222}${top cpu 4} ${goto 274}${top mem 4}
-     5  -  ${top name 5}${alignr} ${goto 222}${top cpu 5} ${goto 274}${top mem 5}
-${color5}${font Roboto:size=10}M E M O R Y   ${hr 2}${font}${color}
-${color2}${offset 30}RAM: ${color}${alignr}${offset -10}${mem} / ${memmax}${alignr}${membar}
-${color2}${offset 30}Swap:${color} ${alignr}${offset -10}${swap} / ${swapmax}${alignr}${swapbar}
-${color2}Top Processes${goto 222}cpu%${goto 274}mem%${color}
-${voffset 4}     1  -  ${top_mem name 1}${alignr}${goto 170} ${goto 222}${top_mem cpu 1} ${goto 274}${top_mem mem 1}
-     2  -  ${top_mem name 2}${alignr}${goto 170} ${goto 222}${top_mem cpu 2} ${goto 274}${top_mem mem 2}
-     3  -  ${top_mem name 3}${alignr}${goto 170} ${goto 222}${top_mem cpu 3} ${goto 274}${top_mem mem 3}
-     4  -  ${top_mem name 4}${alignr}${goto 170} ${goto 222}${top_mem cpu 4} ${goto 274}${top_mem mem 4}
-     5  -  ${top_mem name 5}${alignr}${goto 170} ${goto 222}${top_mem cpu 5} ${goto 274}${top_mem mem 5}
-${color5}${font Roboto:size=10}D R I V E S   ${hr 2}${font}${color}
-${offset 30}${color2}Root  -  SSD:${color} ${alignr}${offset -10}${fs_used /} / ${fs_size /}${alignr}${fs_bar}
-${offset 30}${color2}I/O Read:${color} ${alignr}${offset -10}${diskio_read /dev/nvme0n1p2}${alignr}${diskiograph_read nvme0n1p2 8,100}
-${offset 30}${color2}I/O Write:${color} ${alignr}${offset -10}${diskio_write /dev/nvme0n1p2}${alignr}${diskiograph_write nvme0n1p2 8,100}
+${color2}CPU Temp:${color} $alignr${execi 10 sensors | grep 'Tctl' | awk {'print $2'}}
+${color2}Historico:${color} ${alignr}${cpugraph 8,100}
+${color2}CPU Core 1:${color} ${alignr}${offset -10}${cpu cpu1}%${alignr}${cpubar cpu1}
+${color2}CPU Core 2:${color} ${alignr}${offset -10}${cpu cpu2}%${alignr}${cpubar cpu2}
+${color2}CPU Core 3:${color} ${alignr}${offset -10}${cpu cpu3}%${alignr}${cpubar cpu3}
+${color2}CPU Core 4:${color} ${alignr}${offset -10}${cpu cpu4}%${alignr}${cpubar cpu4}
+#
+#============================GPU NVIDIA===========================================
+#
+${color5}${font Roboto:size=10}G P U   ${hr 2}${font}${color}
+${goto 70}${font Roboto:size=10}${color7}	${execp  nvidia-smi --query-supported-clocks=gpu_name --format=csv,noheader}${font}
+#${font StyleBats:size=20}u${font}${offset 8}
+${color2}${voffset -12}
+Temp. GPU ${alignr}${color}${execi 60 nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader} °C
+${color2}Vel. GPU ${alignr}${color}${execi 60 nvidia-settings -q [fan:0]/GPUCurrentFanSpeed -t} %
+${color2}GPU Clock ${alignr}${color}${execi 60 nvidia-settings -q GPUCurrentClockFreqs | grep -m 1 Attribute | awk '{print $4}' | sed -e 's/\.//' | cut -d, -f1} MHz
+${color2}Mem Clock ${alignr}${color}${execi 86400 nvidia-settings -q all| grep -m 1 GPUCurrentClockFreqs | awk '{print $4}'| sed 's/.$//'} MHz
+${color2}Vram em uso ${alignr}${color}${execi 60 nvidia-settings -q [gpu:0]/UsedDedicatedGPUMemory -t} / ${exec nvidia-settings -q [gpu:0]/TotalDedicatedGPUMemory -t} MiB
+#============================MEMORIA===========================================
+#
+${color5}${font Roboto:size=10}M E M O R I A   ${hr 2}${font}${color}
+${color2}RAM: ${color}${alignr}${offset -10}${mem} / ${memmax}${alignr}${membar}
+${color2}Swap:${color} ${alignr}${offset -10}${swap} / ${swapmax}${alignr}${swapbar}
 
-${offset 30}${color2}256nvme :${color} ${alignr}${offset -10}${fs_used /home/titus/256nvme} / ${fs_size /home/titus/256nvme}${alignr}${fs_bar}
-${offset 30}${color2}I/O Read:${color} ${alignr}${offset -10}${diskio_read /dev/nvme1n1p1}${alignr}${diskiograph_read nvme1n1p1 8,100}
-${offset 30}${color2}I/O Write:${color} ${alignr}${offset -10}${diskio_write /dev/nvme1n1p1}${alignr}${diskiograph_write nvme1n1p1 8,100}
-
-${offset 30}${color2}Storage :${color} ${alignr}${offset -10}${fs_used /home/titus/1tb} / ${fs_size /home/titus/1tb}${alignr}${fs_bar /home/titus/1tb}
-${offset 30}${color2}I/O Read:${color} ${alignr}${offset -10}${diskio_read /dev/sda5}${alignr}${diskiograph_read sda5 8,100}
-${offset 30}${color2}I/O Write:${color} ${alignr}${offset -10}${diskio_write /dev/sda5}${alignr}${diskiograph_write sda5 8,100}
-${color5}${color5}${font Roboto:size=10}N E T W O R K   ${hr 2}${font}${color}
-${color2}${offset 30}IP Address: ${color} ${alignr}${offset -10$}${addrs enp6s0}
-${color2}${offset 30}Eth Up:${color} ${alignr}${offset -10$}${upspeed enp6s0}${alignr}${upspeedgraph enp6s0 8,100}
-${color2}${offset 30}Eth Down:${color} ${alignr}${offset -10$}${downspeed enp6s0}${alignr}${downspeedgraph enp6s0 8,100}
-#${font Roboto:size=10}N V I D I A   ${hr 2}${font}
-#${font Roboto:size=10,weight:bold}${color5}${execp  nvidia-smi --query-supported-clocks=gpu_name --format=csv,noheader}${font}
-#${font StyleBats:size=20}u${font}${offset 8}${voffset -12}GPU Temp ${alignr}${execi 60 nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader} °C
-#${offset 30}Fan Speed ${alignr}${execi 60 nvidia-settings -q [fan:0]/GPUCurrentFanSpeed -t} %
-#${offset 30}GPU Clock ${alignr}${execi 60 nvidia-settings -q GPUCurrentClockFreqs | grep -m 1 Attribute | awk '{print $4}' | sed -e 's/\.//' | cut -d, -f1} MHz
-#${offset 30}Mem Clock ${alignr}${execi 86400 nvidia-settings -q all| grep -m 1 GPUCurrentProcessorClockFreqs | awk '{print $4}' | sed 's/.$//'} MHz
-#${offset 30}Mem Used ${alignr}${execi 60 nvidia-settings -q [gpu:0]/UsedDedicatedGPUMemory -t} / ${exec nvidia-settings -q [gpu:0]/TotalDedicatedGPUMemory -t} MiB0
+#============================ARMAZENAMENTO===========================================
+${color5}${font Roboto:size=10}A R M A Z E N A M E N T O   ${hr 2}${font}${color}
+${color7}Partição${alignr}${goto 170}Tamanho${offset 20$}Usado${offset 20} Livre
+${color8}${execi 6000 df -h | grep ^/dev/sda7 |awk {'print $6'}}${color}${alignr}${goto 180}${fs_size /}${offset 36}${fs_used /}${offset 25}${fs_free /}${alignr}
+${color8}${execi 6000 df -h | grep ^/dev/sda6 |awk {'print $6'}}${color}${alignr}${goto 180}${fs_size /home}${offset 41}${fs_used /home}${offset 25}${fs_free /home}${alignr}
+${color8}Backup${color}${alignr}${goto 180}${execi 6000 df -h /dev/sda8 |grep '/dev/sda8' | awk {'print $2'}}${offset 41}${execi 6000 df -h /dev/sda8 |grep '/dev/sda8' | awk {'print $3'}}${offset 35}${execi 6000 df -h /dev/sda8 |grep '/dev/sda8' | awk {'print $4'}}${alignr}
+#
+#
+#
+#
+#
+#
+#
+#
+#${offset 30}${color2}I/O Read:${color} ${alignr}${offset -10}${diskio_read /dev/nvme0n1p2}${alignr}${diskiograph_read nvme0n1p2 8,100}
+#${offset 30}${color2}I/O Write:${color} ${alignr}${offset -10}${diskio_write /dev/nvme0n1p2}${alignr}${diskiograph_write nvme0n1p2 8,100}
+#${offset 30}${color2}I/O Read:${color} ${alignr}${offset -10}${diskio_read /dev/sda5}${alignr}${diskiograph_read sda5 8,100}
+#${offset 30}${color2}I/O Write:${color} ${alignr}${offset -10}${diskio_write /dev/sda5}${alignr}${diskiograph_write sda5 8,100}
+#============================Internet===========================================
+#${color5}${color5}${font Roboto:size=10}I N T E R N E T   ${hr 2}${font}${color}
+#${color2}${offset 30}IP Address: ${color} ${alignr}${offset -10$}${addrs enp7s0}
+#${color8}Upload:${color} ${alignr}${offset -10$}${upspeed enp7s0}${alignr}${upspeedgraph enp7s0 8,100}
+#${color8}Download:${color} ${alignr}${offset -10$}${downspeed enp7s0}${alignr}${downspeedgraph enp7s0 8,100}
 ]];
